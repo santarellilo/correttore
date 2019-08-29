@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Correzione</title>
+	<meta name = "viewport" content = "width = 320,
+       initial-scale = 1.0, user-scalable = no">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<script type="text/javascript" src="data.json"></script>
+</head>
+<body>
+	<script type="text/javascript">
+	var risultati = JSON.parse(data);
+		
+//var corrette_1 = ["3","1","5","5","4","3","5","4","4","5","1","3","1","3","3","4","1","3","3","5","4","4","2","1","3","2","3","1","1","5","1","2","2","4","2","2","4","2","1","5","3","1","3","4","4","3","5","3","5","4","3","2","3","2","5","4","5","5","2","2"];
+var corrette_1 = [3,1,5,5,4,3,5,4,4,5,1,3,1,3,3,4,1,3,3,5,4,4,2,1,3,2,3,1,1,5,1,2,2,4,2,2,4,2,1,5,3,1,3,4,4,3,5,3,5,4,3,2,3,2,5,4,5,5,2,2];
+var corrette_2 = [];
+var corrette_3 = [];
+var corrette_4 = [];
+var corrette_5 = [];
+
+var logica = 0;
+var cultura = 0;
+var biologia = 0;
+var chimica = 0;
+var matfis = 0;
+
+var graduatoria = {};
+
+
+	var n_simu = document.getElementById('n_simu');
+	var id_foglio = document.getElementById('id_foglio');
+	var answ_string = document.getElementById('answ_string');
+
+	
+	//console.log('Dati ottenuti'+'-'+n_simu);
+	//return n_simu, id_foglio, answ_string;
+
+
+//return corrette
+function selectCorrette(n_simu) {
+  console.log('Indicizzo corrette per '+n_simu);
+  //var corrette = [];
+  if (n_simu == 1){
+  	var corrette = corrette_1;
+  } else if(n_simu == 2){
+  	var corrette = corrette_2;
+  } else if(n_simu == 3){
+  	var corrette = corrette_3;
+  } else if(n_simu == 4){
+  	var corrette = corrette_4;
+  } else if(n_simu == 5){
+  	var corrette = corrette_5;
+  }
+
+  
+  console.log(corrette);
+  return corrette;
+}
+//return sezione aggiornata
+function correggiDomanda(answ, controllo){
+	console.log('data: '+answ+'controllo: '+controllo)
+	if (answ == controllo) {
+		var punto = 1.5;
+	} else if (answ == "0"){
+		var punto = 0;
+	} else {
+		var punto = -0.4;
+	}
+	//console.log(sezione);
+	return punto;
+}
+
+function calcoloPunteggio2(answ_string, corrette){
+	var answ_string = answ_string.replace(/-/g, '');
+	var answ_array = Array.from(answ_string);
+	console.log(answ_array);
+	var punteggio = 0;
+	
+	for (i = 0; i < answ_array.length; i++) { 
+  		if (answ_array[i]==corrette[i]){
+  			punteggio = punteggio+1.5;
+  		} else if (answ_array[i]=="0"){
+  			punteggio = punteggio;
+  		} else {
+  			punteggio = punteggio-0.4;
+  		}
+	}
+
+	return punteggio;
+}
+
+
+//return punteggio
+function calcoloPunteggio(answ_string, corrette){
+
+	//dividi le risposte
+
+	//var answ_array = answ_string.split("-").map(Number);
+	console.log(answ_string);
+	var answ_string = answ_string.replace(/-/g, '');
+	var answ_array = Array.from(answ_string);
+	
+
+  for (var i in answ_array){
+  	//console.log(answ_array[i]);
+  	//logica
+  	if (i <= 9){
+  		var punto = correggiDomanda(answ_array[i], corrette[i]);
+  		logica = logica + punto;
+  		console.log('Logica fatta '+logica);
+  	} else if (i > 9 && i <= 21){
+  	//cultura
+  		var punto = correggiDomanda(answ_array[i], corrette[i]);
+  		cultura = cultura + punto;
+  		console.log('Cultura fatta'+cultura);
+  	} else if (i > 21 && i <= 39){
+  	//biologia
+  		var punto = correggiDomanda(answ_array[i], corrette[i]);
+  		biologia = biologia + punto;
+  		console.log('Biologia fatta'+biologia);
+  	} else if (i > 39 && i <= 51){
+  	//chimica
+  		var punto = correggiDomanda(answ_array[i], corrette[i]);
+  		chimica = chimica + punto;
+  		console.log('Chimica fatta'+chimica);
+  	} else if (i > 51){
+  	//matfis
+  		var punto = correggiDomanda(answ_array[i], corrette[i]);
+  		matfis = matfis + punto;
+  		console.log('Mate fatta'+matfis);
+  	} 
+  	i = i+1;
+  	
+  }
+	var punteggio = logica+cultura+biologia+chimica+matfis;
+	return punteggio;
+}
+
+function visualizzaConteggio(){
+			
+	var textRisposte = document.getElementById('answ_string');
+
+	var avviso = document.getElementById('avviso');
+				
+	if (textRisposte.value.length != 0 && textRisposte.value.length < 119){
+		avviso.setAttribute('class', 'alert alert-danger');
+	if (event.keyCode != 8){
+		textRisposte.value = textRisposte.value+'-';
+	} else {
+		textRisposte.value = textRisposte.value.substring(0,textRisposte.value.length-1);
+	}
+	document.getElementById('conteggio').innerHTML = textRisposte.value.length/2;
+	}  else {
+		document.getElementById('conteggio').innerHTML = textRisposte.value.length/2+0.5;
+		avviso.setAttribute('class', 'alert alert-success');
+	}
+	
+}
+
+function JSONappend(graduatoria){
+	var iJSON = JSON.stringify(graduatoria);
+	console.log(iJSON);
+	return iJSON;
+}
+
+function resetta(){
+	logica = 0;
+	cultura = 0;
+	biologia = 0;
+	chimica = 0;
+	matfis = 0;
+	punteggio = 0;
+	punteggioSezioni = 0;
+}
+
+function submitRisposte(id_foglio, n_simu, logica, cultura, biologia, chimica, matfis, punteggio){
+	
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+       // Typical action to be performed when the document is ready:
+       document.getElementById("avviso").innerHTML = xhttp.responseText;
+    }
+	};
+	xhttp.open("GET", "correttore.php", true);
+	xhttp.send(id_foglio);
+	xhttp.send(n_simu);
+	xhttp.send(logica);
+	xhttp.send(cultura);
+	xhttp.send(biologia);
+	xhttp.send(chimica);
+	xhttp.send(matfis);
+	xhttp.send(punteggio);
+
+}
+
+function correzione(){
+	//ottieniDati();
+	var n_simu = document.getElementById('n_simu').value;
+	var id_foglio = document.getElementById('id_foglio').value;
+	var answ_string = document.getElementById('answ_string').value;
+	if (n_simu){
+		var corrette=selectCorrette(n_simu);
+	} 
+	if (id_foglio, answ_string, corrette) {
+		var punteggio = calcoloPunteggio(answ_string, corrette);
+		console.log('Punteggio: '+ punteggio);
+		console.log('Logica: '+ logica);
+		console.log('Cultura: '+ cultura);
+		console.log('Biologia: '+ biologia);
+		console.log('Chimica: '+ chimica);
+		console.log('Matematica e Fisica: '+ matfis);
+		var punteggioSezioni = {
+			"logica": logica,
+			"cultura": cultura,
+			"biologia": biologia,
+			"chimica": chimica,
+			"matfis": matfis,
+			"punteggio": punteggio
+		};
+		//graduatoria[id_foglio] = punteggioSezioni;
+		submitRisposte(id_foglio, n_simu, logica, cultura, biologia, chimica, matfis, punteggio);
+		resetta();
+	}
+	//if (punteggio){
+	//	alert('Finito, punteggio:'+punteggio);
+	//}
+}
+
+
+	</script>
+	<div class="container-fluid mt-3">
+	<div class="row">
+		<div class="col">
+		<button type="button" class="btn btn-warning col-12" onclick='javascript:alert("Inserire le risposte in sequenza secondo la seguente legenda. NON inserire il numero della domanda.0 -> non data, A = 1, B = 2, C = 3 ,D = 4, E = 5 N.B. SEPARARE I NUMERI CON -");'>Istruzioni</button>
+		</div>
+	</div>
+	<hr>
+<form>
+  <div class="form-group">
+    <label for="n_simu">Numero simulazione</label>
+    <select class="form-control" id="n_simu" name="n_simu" required>
+      <option>Seleziona la simulazione</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="id_foglio">ID Foglio</label>
+    <input class="form-control" type="text" pattern="[0-9]*" id="id_foglio" name="id_foglio" placeholder="inserisci ID Foglio" required>
+  </div>
+  <div class="form-group">
+    <label for="answ_string">Risposte</label>
+    <input class="form-control" type="text" pattern="[0-9]*" id="answ_string" name="answ_string" rows="3" maxlength="119" onkeyup="visualizzaConteggio()" ></input>
+  </div>
+  <button type="submit" class="btn btn-primary col-12">Invia</button>
+
+</form></br>
+<div class="row">
+	<div class="col">
+		<div class="alert alert-secondary" role="alert" id="avviso">
+			Sei alla risposta: <span id="conteggio">0</span>
+		</div>
+	</div>
+</div>
+</div>
+	
+</body>
+</html>
